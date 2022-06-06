@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import { Text, Box, Button } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
-function App() {
+const App = () => {
+  const [playing, setPlaying] = useState(false);
+
+  const togglePlay = (isPlay) => {
+    if (isPlay) {
+      setPlaying(true);
+      if (window.api) {
+        window.api.sendMessage("play");
+      }
+    } else {
+      setPlaying(false);
+      if (window.api) {
+        window.api.sendMessage("stop");
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (window.api) {
+      window.api.onMessage((event, message) => {
+        if (message === "play") {
+          setPlaying(true);
+        } else if (message === "stop") {
+          setPlaying(false);
+        }
+      });
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box
+      w="100vw"
+      h="100vh"
+      bg="blue.300"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      flexDir="column"
+    >
+      <Text fontSize="6xl">Here is Web</Text>
+      <Button colorScheme="orange" onClick={() => togglePlay(!playing)}>
+        {playing ? "Stop" : "Play"}
+      </Button>
+      <Text>{playing ? "Playing..." : "Stoped"}</Text>
+    </Box>
   );
-}
+};
 
 export default App;
